@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 st.title("Dashboard de La Gran Siete")
 
 sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSWYoXcIYju3SRMVWUEyNnLW-PurXGm4wCFiEBqOUk-chJzvdhY5y071WdIPr8IBm6VI3hhvinoLPkk/pub?output=csv"
- df = pd.read_csv(sheet_url)
+df = pd.read_csv(sheet_url)
 
 # Limpiar y agrupar edades
 def extraer_anio(valor):
