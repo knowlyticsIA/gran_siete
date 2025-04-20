@@ -8,7 +8,6 @@ import streamlit as st
 st.set_page_config(layout="wide")
 st.title("Dashboard de La Gran Siete")
 
-df = pd.read_csv("datos.csv")
 sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSWYoXcIYju3SRMVWUEyNnLW-PurXGm4wCFiEBqOUk-chJzvdhY5y071WdIPr8IBm6VI3hhvinoLPkk/pub?output=csv"
 df = pd.read_csv(sheet_url)
 # Limpiar y agrupar edades
