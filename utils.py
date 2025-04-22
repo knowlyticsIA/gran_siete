@@ -22,7 +22,6 @@ def limpiar_datos(df):
     df['Grupo_Edad'] = pd.cut(df['Edad'], bins=bins, labels=labels)
 
     columnas_a_quitar = [
-        '¿Qué mejorarías en estos eventos?',
         'Año_Nacimiento_Clean',
         'Edad',
         'Marca temporal',
