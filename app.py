@@ -68,7 +68,6 @@ if selected_tab == "📌 Introducción":
 """)
 
 # Tab 2: Perfil del público
-# Tab 2: Perfil del público
 elif selected_tab == "🧑‍🤝‍🧑 Perfil del público":
     st.header("¿Quién es el público de La Gran Siete?")
 
@@ -99,6 +98,7 @@ elif selected_tab == "🧑‍🤝‍🧑 Perfil del público":
                 ax.tick_params(axis='x', rotation=45)
 
             st.pyplot(fig)
+
 
 # Tab 3: Colaboración con la gorra
 elif selected_tab == "🎩💰 Colaboración con la gorra":
@@ -138,6 +138,8 @@ elif selected_tab == "🎩💰 Colaboración con la gorra":
     mostrar_cruce('¿En qué zona vivís?', "Colaboración con la gorra según zona de residencia")
     mostrar_cruce('¿Con qué frecuencia asistís a estas varietés?', "Colaboración con la gorra según frecuencia de asistencia")
 
+
+
 # Tab 4: Cruces entre variables
 elif selected_tab == "🔀 Cruces entre variables":
     st.header("Cruces entre variables")
@@ -174,6 +176,7 @@ elif selected_tab == "🔀 Cruces entre variables":
         
         st.pyplot(fig)
 
+
 # Tab 5: Comentarios y mejoras
 elif selected_tab == "📝 Comentarios y mejoras":
     st.header("Comentarios y sugerencias del público")
@@ -198,4 +201,3 @@ elif selected_tab == "📝 Comentarios y mejoras":
         ax.grid(True, axis='x', linestyle='--', alpha=0.7)
         plt.xticks(rotation=0)
         st.pyplot(fig)
-        
