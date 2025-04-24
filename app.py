@@ -16,7 +16,7 @@ st.sidebar.title("Navegación")
 tabs = [
     "📌 Introducción",
     "🧑‍🤝‍🧑 Perfil del público",
-    "Colaboración económica",
+    "🧢Colaboración económica",
     "🔀 Cruces entre variables",
     "📝 Comentarios y mejoras"
 ]
@@ -26,54 +26,51 @@ selected_tab = st.sidebar.radio("Ir a:", tabs)
 if selected_tab == "📌 Introducción":
     st.markdown("""
     Este dashboard tiene como propósito ofrecer una visión clara y estructurada de los datos que conforman el público de La Gran Siete. Aquí se presentan las percepciones y comportamientos de las personas que participan activamente en nuestros eventos, permitiéndonos entender mejor las dinámicas de la comunidad y cómo podemos seguir mejorando.
+    
     ### En este espacio podrás explorar:
     - 👥 **El perfil de nuestros participantes**: Conociendo quiénes son, sus edades, y cómo se conectan con nuestro proyecto.
     - 💡 **Sus opiniones y percepciones**: Qué piensan sobre nuestras propuestas y actividades, y cómo evalúan su experiencia.
     - 🎭 **Su participación en los eventos**: Cómo viven y se sienten dentro de los eventos que organizamos.
-    - **La colaboración económica**: Quiénes colaboran con la gorra y qué factores están asociados a esa decisión.
+    - 💼 **La colaboración económica**: Quiénes colaboran con la gorra y qué factores están asociados a esa decisión.
     - ❤️ **Áreas de mejora**: Identificar oportunidades para seguir creciendo juntos y hacer de La Gran Siete un proyecto aún más inclusivo y enriquecedor.
 """)
 
 # Tab 2: Perfil del público
 elif selected_tab == "🧑‍🤝‍🧑 Perfil del público":
     st.header("¿Quién es el público de La Gran Siete?")
-    torta_columnas = ['Grupo_Edad', '¿Cómo nos conociste?','¿Con qué frecuencia asistís a estas varietés?','¿Asistís a eventos similares de otros centros culturales?']
+    torta_columnas = ['¿Cómo nos conociste?', '¿Con qué frecuencia asistís a estas varietés?', '¿Asistís a eventos similares de otros centros culturales?']
+    barras_columna = ['Ocupación', '¿En qué zona vivís?', '¿Colaboraste con la gorra?', '¿Consumiste algo en la barra?', '¿Qué es lo que más te gusta de La Gran Siete?', 'Grupo_Edad']
+    
     for col in df.columns:
-        st.subheader(col)
+        # Verifica si la columna está en torta_columnas y no está en columnas_a_excluir
         if col in torta_columnas:
+            st.subheader(col)
             grafico_torta(df, col)
-        else:
+        if col in barras_columna:
+            st.subheader(col)
             grafico_barras(df, col, orientacion='horizontal')
+
     
 # Tab 3: Colaboración económica
-elif selected_tab == "Colaboración económica":
+elif selected_tab == "🧢Colaboración económica":
     st.header("¿Quiénes colaboran con la gorra y por qué?")
     columna_objetivo = '¿Colaboraste con la gorra?'
-    st.markdown("### 👤 Perfil de quienes colaboran")
-    # Asegurate de que cada columna esté presente antes de graficar
-    posibles_columnas = [
-        ('Grupo_Edad', "Colaboración con la gorra según grupo de edad"),
-        ('¿En qué zona vivís?', "Colaboración con la gorra según zona de residencia"),
-        ('¿Con qué frecuencia asistís a estas varietés?', "Colaboración con la gorra según frecuencia de asistencia")
-    ]
+    columnas = ['¿Colaboraste con la gorra?', '¿Consumiste algo en la barra?']
 
-    for col, titulo in posibles_columnas:
-        if columna_objetivo in df.columns and col in df.columns:
-            st.subheader(titulo)
-            try:
-                graficos_cruzados(df, columna_objetivo=col, columna_segmento=columna_objetivo, var_explicativa=col, colormap="pastel",title='Colaboración')
-            except Exception as e:
-                st.warning(f"No se pudo generar el gráfico para: {col} ({e})")
+    for col in columnas:
+        if columna_objetivo in df.columns:
+            st.subheader(col)
+            grafico_barras(df, col, orientacion='horizontal')  
 
 # Tab 4: Cruces entre variables
 elif selected_tab == "🔀 Cruces entre variables":
-    st.header("Cruces entre variables")
-    columnas_disponibles = df.columns.tolist()
-    col1 = st.selectbox("Seleccioná la primera variable (eje X)", columnas_disponibles, key='col1')
-    col2 = st.selectbox("Seleccioná la segunda variable (eje de color)", columnas_disponibles, key='col2')
-    if col1 and col2 and col1 != col2:
-        st.subheader(f"{col1} vs {col2}")
-        graficos_cruzados(df, col2, col1, 'Set2', col1, col2)
+    combinaciones_validas = {
+        'Ocupación': ['¿Dónde vivís?', '¿Con qué frecuencia asistís a estas varietés?', '¿Consumiste algo en la barra?', '¿Colaboraste con la gorra?'],
+        '¿Consumiste algo en la barra?': ['¿Colaboraste con la gorra?'],
+        'Grupo_Edad': ['¿Cómo nos conociste?', '¿Con qué frecuencia asistís a estas varietés?', '¿Asistís a eventos similares de otros centros culturales?', '¿Consumiste algo en la barra?', '¿Colaboraste con la gorra?']
+    }
+    graficos_cruzados(df, combinaciones_validas)  
+
 
 # Tab 5: Comentarios y mejoras
 elif selected_tab == "📝 Comentarios y mejoras":
