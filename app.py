@@ -65,7 +65,7 @@ elif selected_tab == "🧢Colaboración económica":
 # Tab 4: Cruces entre variables
 elif selected_tab == "🔀 Cruces entre variables":
     combinaciones_validas = {
-        'Ocupación': ['¿Dónde vivís?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?'],
+        'Ocupación': ['¿En qué zona vivís?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?'],
         '¿Consumiste algo en la barra?': ['¿Pudiste colaborar con la entrada a la gorra?'],
         'Grupo_Edad': ['¿Cómo nos conociste?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Asistís a eventos similares de otros centros culturales?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?']
     }
