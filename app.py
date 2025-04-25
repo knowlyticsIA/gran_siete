@@ -38,8 +38,8 @@ if selected_tab == "📌 Introducción":
 # Tab 2: Perfil del público
 elif selected_tab == "🧑‍🤝‍🧑 Perfil del público":
     st.header("¿Quién es el público de La Gran Siete?")
-    torta_columnas = ['¿Cómo nos conociste?', '¿Con qué frecuencia asistís a estas varietés?', '¿Asistís a eventos similares de otros centros culturales?']
-    barras_columna = ['Ocupación', '¿En qué zona vivís?', '¿Colaboraste con la gorra?', '¿Consumiste algo en la barra?', '¿Qué es lo que más te gusta de La Gran Siete?', 'Grupo_Edad']
+    torta_columnas = ['¿Cómo nos conociste?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Asistís a eventos similares de otros centros culturales?']
+    barras_columna = ['Ocupación', '¿En qué zona vivís?', '¿Pudiste colaborar con la entrada a la gorra?', '¿Consumiste algo en la barra?', '¿Qué es lo que más te gusta de La Gran Siete?', 'Grupo_Edad']
     
     for col in df.columns:
         # Verifica si la columna está en torta_columnas y no está en columnas_a_excluir
@@ -54,8 +54,8 @@ elif selected_tab == "🧑‍🤝‍🧑 Perfil del público":
 # Tab 3: Colaboración económica
 elif selected_tab == "🧢Colaboración económica":
     st.header("¿Quiénes colaboran con la gorra y por qué?")
-    columna_objetivo = '¿Colaboraste con la gorra?'
-    columnas = ['¿Colaboraste con la gorra?', '¿Consumiste algo en la barra?']
+    columna_objetivo = '¿Pudiste colaborar con la entrada a la gorra?'
+    columnas = ['¿Pudiste colaborar con la entrada a la gorra?', '¿Consumiste algo en la barra?']
 
     for col in columnas:
         if columna_objetivo in df.columns:
@@ -65,9 +65,9 @@ elif selected_tab == "🧢Colaboración económica":
 # Tab 4: Cruces entre variables
 elif selected_tab == "🔀 Cruces entre variables":
     combinaciones_validas = {
-        'Ocupación': ['¿Dónde vivís?', '¿Con qué frecuencia asistís a estas varietés?', '¿Consumiste algo en la barra?', '¿Colaboraste con la gorra?'],
-        '¿Consumiste algo en la barra?': ['¿Colaboraste con la gorra?'],
-        'Grupo_Edad': ['¿Cómo nos conociste?', '¿Con qué frecuencia asistís a estas varietés?', '¿Asistís a eventos similares de otros centros culturales?', '¿Consumiste algo en la barra?', '¿Colaboraste con la gorra?']
+        'Ocupación': ['¿Dónde vivís?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?'],
+        '¿Consumiste algo en la barra?': ['¿Pudiste colaborar con la entrada a la gorra?'],
+        'Grupo_Edad': ['¿Cómo nos conociste?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Asistís a eventos similares de otros centros culturales?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?']
     }
     graficos_cruzados(df, combinaciones_validas)  
 
@@ -75,7 +75,7 @@ elif selected_tab == "🔀 Cruces entre variables":
 # Tab 5: Comentarios y mejoras
 elif selected_tab == "📝 Comentarios y mejoras":
     st.header("Comentarios y sugerencias del público")    
-    columna_comentarios = '¿Qué mejorarías en estos eventos?'
+    columna_comentarios = '¿Tenés algún aporte o sugerencia para dejarnos?'
     comentarios = df[columna_comentarios].dropna()
     top_comentarios = comentarios.value_counts().head(15)
     st.subheader("Comentarios más frecuentes")
