@@ -93,10 +93,11 @@ elif selected_tab == "📝 Comentarios y mejoras":
 
     if palabra_clave:
         lemma = lematizar_palabra(palabra_clave)
-        
-        # Siempre usa el patrón [oa] si la palabra original termina en a o en o
-        if palabra_clave.endswith(('a', 'o')) and "[oa]" not in lemma:
-            patron = fr"\b{lemma}[oa]\w*"
+
+        # Si el lema termina en "o" y la palabra clave termina en "a" o "o"
+        if lemma.endswith("o") and palabra_clave.endswith(('a', 'o')):
+            # Armamos el patrón que busque ambas variantes de género
+            patron = fr"\b{lemma[:-1]}[oa]\w*"
         else:
             patron = fr"\b{lemma}\w*"
 

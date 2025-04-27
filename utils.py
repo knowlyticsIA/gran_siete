@@ -8,12 +8,21 @@ import re
 def cargar_datos(url):
     return pd.read_csv(url)
 
-# Función para eliminar género en las ocupaciones
+# Función para eliminar género (en las ocupaciones)
 def eliminar_genero(texto):
+    excepciones = ["chef", "estudiante", "docente", "periodista"]
+    
     if pd.isna(texto) or not isinstance(texto, str):
         return ""
-    texto_sin_genero = re.sub(r"(o|a)\b", "", texto.lower().strip())
+    
+    texto_lower = texto.lower().strip()
+    
+    if any(excepcion in texto_lower for excepcion in excepciones):
+        return texto
+    
+    texto_sin_genero = re.sub(r"(o|a)\b", "", texto_lower)
     return texto_sin_genero + "x" if texto_sin_genero else ""
+
 
 # Función para limpiar los datos
 def limpiar_datos(df):
