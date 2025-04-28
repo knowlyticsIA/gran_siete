@@ -76,13 +76,15 @@ def limpiar_datos(df):
         
     return df
 
-@lru_cache(maxsize=None)  # Cache para cargar el modelo una sola vez
+@lru_cache(maxsize=None)  # Cache para cargar el modelo solo una vez
 def cargar_modelo_spacy():
     try:
         return spacy.load("es_core_news_sm")
-    except:
+    except OSError:
         import subprocess
-        subprocess.run(["python", "-m", "spacy", "download", "es_core_news_sm"])
+        import sys
+        # Descargar el modelo si no está instalado
+        subprocess.run([sys.executable, "-m", "spacy", "download", "es_core_news_sm"], check=True)
         return spacy.load("es_core_news_sm")
 
 def lematizar_palabra(palabra, neutralizar_genero=True):
