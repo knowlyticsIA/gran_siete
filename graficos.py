@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import streamlit as st
-from wordcloud import WordCloud, STOPWORDS
+from wordcloud import WordCloud
 
 def grafico_torta(df, columna):
     fig, ax = plt.subplots(figsize=(3.5, 3.5))
@@ -65,18 +65,17 @@ def grafico_barras_conteo(df, col_categoria, col_valor):
     st.pyplot(fig)
 
 
-def generar_wordcloud(textos):
-    from utils import obtener_stopwords_es
-    
+def generar_wordcloud(textos, stopwords):
     text_joined = " ".join(str(t) for t in textos if pd.notna(t))
+    
     wordcloud = WordCloud(
-        width=800, 
-        height=400, 
+        width=800,
+        height=400,
         background_color='white',
-        stopwords=obtener_stopwords_es(),  
+        stopwords=stopwords,
         colormap='tab10'
     ).generate(text_joined)
-    
+
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis("off")

@@ -1,8 +1,9 @@
 import streamlit as st
-from utils import cargar_datos, limpiar_datos, cargar_modelo_spacy, lematizar_palabra
+from utils import cargar_datos, limpiar_datos, cargar_modelo_spacy, obtener_stopwords_es, normalizar, lematizar_palabra, buscar_comentarios, resaltar_palabras
 from graficos import grafico_torta, grafico_barras, graficos_cruzados, grafico_barras_conteo, generar_wordcloud
 
 nlp = cargar_modelo_spacy()
+stopwords_es = obtener_stopwords_es()
 
 # Configuración
 st.set_page_config(layout="wide")
@@ -77,7 +78,7 @@ elif selected_tab == "🔀 Cruces entre variables":
 elif selected_tab == "📝 Comentarios y mejoras":
     st.header("Comentarios y sugerencias del público")
     columna_comentarios = '¿Tenés algún aporte o sugerencia para dejarnos?'
-
+    max_comentarios_mostrar = 20
     # Gráfico de comentarios frecuentes
     st.subheader("📊 Comentarios más frecuentes")
     top_comentarios = df[columna_comentarios].value_counts().head(15)
@@ -92,39 +93,22 @@ elif selected_tab == "📝 Comentarios y mejoras":
     ).strip().lower()
 
     if palabra_clave:
-        lemma = lematizar_palabra(palabra_clave)
-
-        # Si el lema termina en "o" y la palabra clave termina en "a" o "o"
-        if lemma.endswith("o") and palabra_clave.endswith(('a', 'o')):
-            # Armamos el patrón que busque ambas variantes de género
-            patron = fr"\b{lemma[:-1]}[oa]\w*"
-        else:
-            patron = fr"\b{lemma}\w*"
-
-        mascara = df[columna_comentarios].str.contains(
-            patron,
-            case=False,
-            na=False,
-            regex=True
-        )
-        comentarios_filtrados = df[mascara]
+        comentarios_filtrados, formas_clave = buscar_comentarios(df, palabra_clave, columna=columna_comentarios)
 
         if comentarios_filtrados.empty:
             st.warning("⚠️ No se encontraron comentarios con ese término.")
         else:
-            if len(comentarios_filtrados) <= 3:
+            if len(comentarios_filtrados) <= max_comentarios_mostrar:
                 st.success(f"📌 {len(comentarios_filtrados)} comentarios encontrados:")
                 for idx, row in comentarios_filtrados.iterrows():
                     texto = str(row[columna_comentarios])
                     doc = nlp(texto)
-                    resaltado = ""
-                    for token in doc:
-                        if token.lemma_.lower() == lemma:
-                            resaltado += f"<mark>{token.text}</mark>"
-                        else:
-                            resaltado += token.text_with_ws
+                    palabras_clave = formas_clave
+                    resaltado = resaltar_palabras(texto, palabras_clave, nlp)
                     with st.expander(f"✏️ Comentario #{idx + 1}"):
                         st.markdown(resaltado, unsafe_allow_html=True)
             else:
                 st.info(f"🔍 {len(comentarios_filtrados)} comentarios encontrados:")
-                generar_wordcloud(comentarios_filtrados[columna_comentarios].dropna().tolist())
+                generar_wordcloud(comentarios_filtrados[columna_comentarios].dropna().tolist(), stopwords=stopwords_es)
+
+
