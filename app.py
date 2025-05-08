@@ -1,6 +1,29 @@
 import streamlit as st
-from utils import cargar_datos, limpiar_datos, cargar_modelo_spacy, obtener_stopwords_es, normalizar, lematizar_palabra, buscar_comentarios, resaltar_palabras
-from graficos import grafico_torta, grafico_barras, graficos_cruzados, grafico_barras_conteo, generar_wordcloud
+from utils import *
+from graficos import *
+
+def limpiar_datos(df):
+    bins = [0, 20, 30, 40, 50, 100] 
+    labels = ['<20', '21-30', '31-40', '41-50', '50+']  
+    df['Grupo Etareo'] = pd.cut(df['Edad'], bins=bins, labels=labels, right=True)
+
+    # Limpiar columnas innecesarias
+    columnas_a_quitar = [
+        'Año_Nacimiento_Clean',
+        'Edad',
+        #'Marca temporal',
+        'Dirección de correo electrónico',
+        'Nombre'
+    ]
+    for col in columnas_a_quitar:
+        if col in df.columns:
+            df = df.drop(columns=col)
+
+    # Aplicar la eliminación de género a las ocupaciones
+    excepciones = ["chef", "estudiante", "docente", "periodista"]
+    df['Profesión'] = (df['Ocupación'].fillna("").astype(str).str.lower().apply(lambda texto: eliminar_genero(texto, excepciones)))
+        
+    return df
 
 nlp = cargar_modelo_spacy()
 stopwords_es = obtener_stopwords_es()
@@ -11,7 +34,7 @@ st.title("Dashboard de La Gran Siete")
 
 # Cargar y limpiar datos
 sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSWYoXcIYju3SRMVWUEyNnLW-PurXGm4wCFiEBqOUk-chJzvdhY5y071WdIPr8IBm6VI3hhvinoLPkk/pub?output=csv"
-df_raw = cargar_datos(sheet_url)
+df_raw = pd.read_csv(sheet_url)
 df = limpiar_datos(df_raw)
 
 # Sidebar de navegación
@@ -21,7 +44,8 @@ tabs = [
     "🧑‍🤝‍🧑 Perfil del público",
     "🧢 Colaboración económica",
     "🔀 Cruces entre variables",
-    "📝 Comentarios y mejoras"
+    "📝 Comentarios y mejoras",
+    "📈 Aportes y consumos en el tiempo"
 ]
 selected_tab = st.sidebar.radio("Ir a:", tabs)
 
@@ -42,7 +66,7 @@ if selected_tab == "📌 Introducción":
 elif selected_tab == "🧑‍🤝‍🧑 Perfil del público":
     st.header("¿Quién es el público de La Gran Siete?")
     torta_columnas = ['¿Cómo nos conociste?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Asistís a eventos similares de otros centros culturales?']
-    barras_columna = ['Profesión', '¿En qué zona vivís?', '¿Pudiste colaborar con la entrada a la gorra?', '¿Consumiste algo en la barra?', '¿Qué es lo que más te gusta de La Gran Siete?', 'Grupo_Edad']
+    barras_columna = ['Profesión', '¿En qué zona vivís?', '¿Pudiste colaborar con la entrada a la gorra?', '¿Consumiste algo en la barra?', '¿Qué es lo que más te gusta de La Gran Siete?', 'Grupo Etareo']
     
     for col in df.columns:
         if col in torta_columnas:
@@ -70,7 +94,7 @@ elif selected_tab == "🔀 Cruces entre variables":
     combinaciones_validas = {
         'Profesión': ['¿En qué zona vivís?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?'],
         '¿Consumiste algo en la barra?': ['¿Pudiste colaborar con la entrada a la gorra?'],
-        'Grupo_Edad': ['¿Cómo nos conociste?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Asistís a eventos similares de otros centros culturales?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?']
+        'Grupo Etareo': ['¿Cómo nos conociste?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Asistís a eventos similares de otros centros culturales?', '¿Consumiste algo en la barra?', '¿Pudiste colaborar con la entrada a la gorra?']
     }
     graficos_cruzados(df, combinaciones_validas)
 
@@ -111,4 +135,42 @@ elif selected_tab == "📝 Comentarios y mejoras":
                 st.info(f"🔍 {len(comentarios_filtrados)} comentarios encontrados:")
                 generar_wordcloud(comentarios_filtrados[columna_comentarios].dropna().tolist(), stopwords=stopwords_es)
 
+#Tab 6: Serie histórica de aportes y consumos
+elif selected_tab == "📈 Aportes y consumos en el tiempo":
+    configuraciones = [
+        {
+            'titulo': "Colaboración total con la entrada por mes",
+            'colores': ["#FF6B6B", "#4ECDC4"],  # Coral + Turquesa
+            'altura': 450
+        },
+        {
+            'titulo': "Consumo total en la barra por mes",
+            'colores': ["#4ECDC4", "#FF6B6B"],  
+            'altura': 450
+        }
+    ]
+    
+    # Procesamiento de datos
+    df = configurar_fechas(df)
+    
+    # Generar series temporales
+    serie_gorra = generar_serie_temporal(
+        df,
+        columna_filtro='¿Pudiste colaborar con la entrada a la gorra?',
+        valores_filtrar=["Sí - con QR / transferencia", "Sí - en efectivo"]
+    )
 
+    serie_barra = generar_serie_temporal(
+        df,
+        columna_filtro='¿Consumiste algo en la barra?',
+        valores_filtrar=["Sí", "No"]
+    )
+    
+    # Mostrar gráficos
+    st.header("Análisis Temporal de Aportes y Consumos")
+    graficos_series_temporales(
+        series=[serie_gorra, serie_barra],
+        configuraciones=configuraciones
+    )
+
+addFooter()
