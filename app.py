@@ -11,7 +11,7 @@ def limpiar_datos(df):
     columnas_a_quitar = [
         'Año_Nacimiento_Clean',
         'Edad',
-        'Marca temporal',
+        #'Marca temporal',
         'Dirección de correo electrónico',
         'Nombre'
     ]
@@ -44,7 +44,8 @@ tabs = [
     "🧑‍🤝‍🧑 Perfil del público",
     "🧢 Colaboración económica",
     "🔀 Cruces entre variables",
-    "📝 Comentarios y mejoras"
+    "📝 Comentarios y mejoras",
+    "📈 Aportes y consumos en el tiempo"
 ]
 selected_tab = st.sidebar.radio("Ir a:", tabs)
 
@@ -134,6 +135,42 @@ elif selected_tab == "📝 Comentarios y mejoras":
                 st.info(f"🔍 {len(comentarios_filtrados)} comentarios encontrados:")
                 generar_wordcloud(comentarios_filtrados[columna_comentarios].dropna().tolist(), stopwords=stopwords_es)
 
+#Tab 6: Serie histórica de aportes y consumos
+elif selected_tab == "📈 Aportes y consumos en el tiempo":
+    configuraciones = [
+        {
+            'titulo': "Colaboración total con la entrada por mes",
+            'colores': ["#FF6B6B", "#4ECDC4"],  # Coral + Turquesa
+            'altura': 450
+        },
+        {
+            'titulo': "Consumo total en la barra por mes",
+            'colores': ["#4ECDC4", "#FF6B6B"],  
+            'altura': 450
+        }
+    ]
+    
+    # Procesamiento de datos
+    df = configurar_fechas(df)
+    
+    # Generar series temporales
+    serie_gorra = generar_serie_temporal(
+        df,
+        columna_filtro='¿Pudiste colaborar con la entrada a la gorra?',
+        valores_filtrar=["Sí - con QR / transferencia", "Sí - en efectivo"]
+    )
+
+    serie_barra = generar_serie_temporal(
+        df,
+        columna_filtro='¿Consumiste algo en la barra?',
+        valores_filtrar=["Sí", "No"]
+    )
+    
+    # Mostrar gráficos
+    st.header("Análisis Temporal de Aportes y Consumos")
+    graficos_series_temporales(
+        series=[serie_gorra, serie_barra],
+        configuraciones=configuraciones
+    )
 
 addFooter()
-

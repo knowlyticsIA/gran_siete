@@ -3,6 +3,7 @@ import seaborn as sns
 import pandas as pd
 import streamlit as st
 from wordcloud import WordCloud
+import altair as alt
 
 def grafico_torta(df, columna):
     fig, ax = plt.subplots(figsize=(3.5, 3.5))
@@ -68,7 +69,6 @@ def generar_wordcloud(textos, stopwords):
     ax.axis("off")
     st.pyplot(fig)
 
-
 def addFooter():
     st.markdown("""
     <style>
@@ -102,3 +102,26 @@ def addFooter():
         <a href="mailto:knowlytics.ia@gmail.com">knowlytics.ia@gmail.com</a>
     </div>
     """, unsafe_allow_html=True)
+
+def graficos_series_temporales(series, configuraciones):
+    for i, serie in enumerate(series):
+        if serie is None or serie.empty:
+            st.warning(f"No hay datos para el gráfico {configuraciones[i]['titulo']}")
+            continue
+        
+        selection = alt.selection_multi(fields=['Tipo'], bind='legend')
+        
+        chart = alt.Chart(serie).mark_line(point={"filled": True, "size": 80}, interpolate='monotone').encode(
+            x='Fecha:T',
+            y='Cantidad:Q',
+            color='Tipo:N',  
+            tooltip=['Fecha:T', 'Tipo:N', 'Cantidad:Q'],
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.1))
+        ).add_selection(
+           selection
+        ).properties(
+            title=configuraciones[i]['titulo'],
+            height=configuraciones[i]['altura']
+        ).interactive()
+        
+        st.altair_chart(chart, use_container_width=True)

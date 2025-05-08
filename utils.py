@@ -7,7 +7,6 @@ import subprocess
 import sys
 from wordcloud import STOPWORDS
 
-
 def eliminar_genero(texto, excepciones=None):
     if excepciones is None:
         excepciones = []
@@ -83,7 +82,6 @@ def buscar_comentarios(df, palabra_clave, columna, minimo_longitud=4):
     
     return df.loc[mascara], formas_a_buscar
 
-
 def resaltar_palabras(texto, palabras_clave, nlp):
     doc = nlp(texto)
     resultado = ""
@@ -93,3 +91,26 @@ def resaltar_palabras(texto, palabras_clave, nlp):
         else:
             resultado += token.text_with_ws
     return resultado
+
+def configurar_fechas(df, columna_temporal='Marca temporal'):
+    df[columna_temporal] = pd.to_datetime(df[columna_temporal], errors='coerce')
+    df['Fecha'] = df[columna_temporal].dt.date
+    return df
+
+def generar_serie_temporal(df, columna_filtro, valores_filtrar, columna_agrupar='Fecha'):
+    df_filtrado = df[df[columna_filtro].isin(valores_filtrar)]
+    
+    serie_ancha = (
+        df_filtrado.groupby(columna_agrupar)[columna_filtro]
+        .value_counts()
+        .unstack()
+        .fillna(0)
+    )
+    
+    serie_larga = (
+        serie_ancha
+        .reset_index()
+        .melt(id_vars=columna_agrupar, var_name='Tipo', value_name='Cantidad')
+    )
+    
+    return serie_larga
