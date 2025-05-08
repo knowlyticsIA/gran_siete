@@ -61,13 +61,14 @@ if selected_tab == "📌 Introducción":
     - 💼 **La colaboración económica**: Quiénes colaboran con la gorra y qué factores están asociados a esa decisión.
     - ❤️ **Áreas de mejora**: Identificar oportunidades para seguir creciendo juntos y hacer de La Gran Siete un proyecto aún más inclusivo y enriquecedor.
     """)
-
+    respuestas = len(df)
+    st.subheader(f"Total de respuestas a la encuesta: {respuestas}")
 # Tab 2: Perfil del Público
 elif selected_tab == "🧑‍🤝‍🧑 Perfil del público":
     st.header("¿Quién es el público de La Gran Siete?")
     torta_columnas = ['¿Cómo nos conociste?', '¿Con qué frecuencia venís a la "Tiene que Salir"?', '¿Asistís a eventos similares de otros centros culturales?']
     barras_columna = ['Profesión', '¿En qué zona vivís?', '¿Pudiste colaborar con la entrada a la gorra?', '¿Consumiste algo en la barra?', '¿Qué es lo que más te gusta de La Gran Siete?', 'Grupo Etareo']
-    
+
     for col in df.columns:
         if col in torta_columnas:
             st.subheader(col)
