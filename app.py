@@ -1,10 +1,11 @@
-import streamlit as st
+import streamlit as st # type: ignore
 from utils import *
 from graficos import *
 
 def limpiar_datos(df):
     bins = [0, 20, 30, 40, 50, 100] 
-    labels = ['<20', '21-30', '31-40', '41-50', '50+']  
+    labels = ['<20', '21-30', '31-40', '41-50', '50+'] 
+    df['Edad'] = pd.to_numeric(df['Edad'], errors='coerce') 
     df['Grupo Etareo'] = pd.cut(df['Edad'], bins=bins, labels=labels, right=True)
 
     # Limpiar columnas innecesarias
